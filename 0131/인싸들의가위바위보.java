@@ -1,20 +1,18 @@
-package algostudy2;
 import java.util.*;
 import java.io.*;
-public class 인싸들의가위바위보 {
+public class Main {
 	
 	public static int n,k;
 	public static int [][] graph;
 	public static int [][]pairs = new int[3][20];
-	public static int canwin;
+	public static int canIwin= 0;
 	public static boolean overflag = false;
 	public static boolean v[];
 	
 	
-	
+
 	public static int whowins(int usr1 , int usr2, int pick1, int pick2) {
-		int winner = 0 ;
-		
+	
 		if(pick1==pick2) return Math.max(usr1,usr2);
 		else {
 		
@@ -24,29 +22,26 @@ public class 인싸들의가위바위보 {
 			if(t==0) return usr2;
 		}
 		
-		return winner;
-		
+		return -1;
 	
 	}
-	private static void fight(int matchcnt, int []turncnt, int usr1, int usr2, int []win, boolean [] v) {
-		
-		for(int i =0 ;i <3;i++)
-	
+	private static void fight(int []turncnt, int usr1, int usr2, int []wincnt, boolean [] v) {
+
 		if(overflag) return;
 		
-		if(win[0]==k) {
-			canwin = 1;
+		if(wincnt[0]==k) { //나의 승리
+			canIwin = 1;
 			overflag = true;
-		//	System.out.println("내가 이김");
+		
 			return;
 		}
-		if(win[1]==k || win[2]==k) {
-	//		System.out.println("다른 누군가가 이김");
+		if(wincnt[1]==k || wincnt[2]==k) { // 1,2 승리
+	
 			return;
 		}
 		
 		
-		if(usr1==0) {
+		if(usr1==0) { // 
 			for(int i = 1 ;i<=n;i++) {
 				if(v[i]) continue;
 				v[i] = true;
@@ -56,14 +51,14 @@ public class 인싸들의가위바위보 {
 				
 				int winner= whowins(usr1,usr2,pick1,pick2);
 				
-				win[winner]++;
+				wincnt[winner]++;
 				turncnt[usr2]++;
 				int next_fighter = 3-usr1-usr2;
 			
-				fight(matchcnt+1,turncnt,winner,next_fighter,win,v);
+				fight(turncnt,winner,next_fighter,wincnt,v);
 				turncnt[usr2]--;
 				v[i] = false;
-				win[winner]--;
+				wincnt[winner]--;
 			}
 			
 			
@@ -73,37 +68,37 @@ public class 인싸들의가위바위보 {
 			for(int i = 1 ;i<=n;i++) {
 				if(v[i]) continue;
 				v[i] = true;
-			//	System.out.printf("usr1=%d usr2=%d 나의 패 =%d\n",usr1,usr2,i);
+			
 				int pick1 = pairs[usr1][turncnt[usr1]];
 				int pick2= i;
 				
 				int winner= whowins(usr1,usr2,pick1,pick2);
-				win[winner]++;
+				wincnt[winner]++;
 				turncnt[usr1]++;
 				int next_fighter = 3-usr1-usr2;
 			
-				fight(matchcnt+1,turncnt,winner,next_fighter,win,v);
+				fight(turncnt,winner,next_fighter,wincnt,v);
 				turncnt[usr1]--;
 				v[i] = false;
-				win[winner]--;
+				wincnt[winner]--;
 			}
 			
 			
 		}
 		else {
-			//System.out.println("다른 사람 싸우기\n");
+			//System.out.println("다른 사람끼리 싸움\n");
 			int pick1= pairs[usr1][turncnt[usr1]];
 			int pick2 = pairs[usr2][turncnt[usr2]];
 			
 			int winner= whowins(usr1,usr2,pick1,pick2);
-			win[winner]++;
+			wincnt[winner]++;
 			int next_fighter = 3-usr1-usr2;
 			turncnt[usr1]++;
 			turncnt[usr2]++;
-			fight(matchcnt+1,turncnt,winner,next_fighter,win,v);
+			fight(turncnt,winner,next_fighter,wincnt,v);
 			turncnt[usr1]--;
 			turncnt[usr2]--;
-			win[winner]--;
+			wincnt[winner]--;
 		}
 	}
 
@@ -136,30 +131,16 @@ public class 인싸들의가위바위보 {
 			pairs[2][i] = Integer.parseInt(st.nextToken());
 		}
 		
-		canwin = 0;
+
 		
 		//input
 		
 		
 		// solve
 		
-		fight(0,new int[3],0,1,new int[3], new boolean[n+1]);
-		
-		
-		
-			
-		
-		
-		
-		
-		
-		
-		//solve
-		
-		
-		
-		
-		System.out.println(canwin);
+		fight(new int[3],0,1,new int[3], new boolean[n+1]);
+
+		System.out.println(canIwin);
 		
 		return;
 		
