@@ -1,0 +1,110 @@
+import java.io.*;
+import java.util.*;
+public class Main {
+	public static int N,ans;
+	public static int population[] = new int[11];
+	public static ArrayList<Integer> []node = new ArrayList[11];
+	public static boolean selected[] = new boolean[11];
+	public static boolean visited[] = new boolean[11];
+	public static void select(int bitmask){
+		int check = 1;
+		for(int i=0;i<N;i++){
+			if(((check<<i)&bitmask)>0 ){
+				selected[i+1] = true; 
+			}
+		}
+		int A_cnt=0,B_cnt=0,flag_A=0,flag_B=0;
+		Queue<Integer> qa = new LinkedList<Integer>();
+		Queue<Integer> qb = new LinkedList<Integer>();
+ 		for(int i=1;i<=N;i++){
+			if(selected[i]){
+				A_cnt++;
+				if(flag_A==0){
+					flag_A=1;
+					qa.offer(i);
+					visited[i]=  true;
+				}
+			}
+			else {
+				B_cnt++;
+				if(flag_B==0){
+					flag_B=1;
+					qb.offer(i);
+					visited[i] = true;
+				}
+			}
+		}
+ 		//A,B 집합으로 선정된 것에 대해서 이어진 것인지 확인
+ 		int cnt_a=1,cnt_b=1;
+ 		while(!qa.isEmpty()){
+ 			int cur = qa.poll();
+ 			int linked_size = node[cur].size();
+ 			for(int i=0;i<linked_size;i++){
+ 				int next_city = node[cur].get(i);
+ 				if(visited[next_city] || !selected[next_city])continue;
+ 				visited[next_city] = true;
+ 				qa.add(next_city);
+ 				cnt_a++;
+ 			}
+ 		}
+ 		
+ 		while(!qb.isEmpty()){
+ 			int cur = qb.poll();
+ 			int linked_size = node[cur].size();
+ 			for(int i=0;i<linked_size;i++){
+ 				int next_city = node[cur].get(i);
+ 				if(visited[next_city] || selected[next_city])continue;
+ 				visited[next_city] = true;
+ 				qb.add(next_city);
+ 				cnt_b++;
+ 			}
+ 		}
+ 		
+ 		if(A_cnt==cnt_a && B_cnt ==cnt_b){
+ 			int a_sum=0,b_sum=0;
+ 			for(int i=1;i<=N;i++){
+ 				if(selected[i]){
+ 					a_sum+= population[i];
+ 				}
+ 				else{
+ 					b_sum+=population[i];
+ 				}
+ 			}
+ 			ans = Math.min(ans, Math.abs(a_sum-b_sum));
+ 		}
+	}
+	public static void init(){
+		for(int i=1;i<=N;i++){
+			visited[i] = false;
+			selected[i] = false;
+		}
+	}
+	
+	public static void main(String[] args) throws Exception{
+		BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine());
+		StringTokenizer st;
+		st = new StringTokenizer(br.readLine()," ");
+		int cnt=1;
+		while(st.hasMoreTokens()){
+			population[cnt++] = Integer.parseInt(st.nextToken());
+		}
+		for(int i=1;i<=N;i++){
+			st= new StringTokenizer(br.readLine()," ");
+			cnt = Integer.parseInt(st.nextToken());
+			node[i] = new ArrayList<Integer>();
+			for(int j=0;j<cnt;j++){
+				node[i].add(Integer.parseInt(st.nextToken()));
+			}
+		}
+		ans = Integer.MAX_VALUE;
+		
+		for(int i=1;i< (1 << N)-1;i++  ){
+			init();
+			select(i);
+		}
+		
+		System.out.println((ans==Integer.MAX_VALUE)?-1: ans);
+	}
+
+}

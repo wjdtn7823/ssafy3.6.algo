@@ -1,0 +1,104 @@
+import java.io.*;
+import java.util.*;
+
+class Node {
+	int y;
+	int x;
+	int len;
+
+	Node(int a, int b, int c) {
+		y = a;
+		x = b;
+		len = c;
+	}
+}
+
+public class Main {
+	public static int N, M;
+	public static int cnt;
+	public static int[][] dir = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+	public static char[][] board = new char[101][101];
+	public static ArrayList<Node> ans = new ArrayList<>();
+	public static int[][] erased = new int[101][101];
+	public static void erase(int y, int x) {
+		int len = 1;
+		int max_len = -1;
+
+		while (true) {
+			boolean flag= false;
+			for (int i = 0; i < 4; i++) {
+				int ny = y + dir[i][0] * len;
+				int nx = x + dir[i][1] * len;
+				if (ny < 0 || nx < 0 || ny >= N || nx >= M) {
+					max_len = len - 1;
+					flag= true;
+					break;
+				}
+				if (board[ny][nx] != '*') {
+					max_len = len - 1;
+					flag=true;
+					break;
+				}
+			}
+			if(flag==true) {
+				break;
+			}
+			else {
+				len++;
+			}
+		}
+		if (max_len != 0) {
+			ans.add(new Node(y, x, max_len));
+			len = 1;
+			if(erased[y][x]==0) {
+				erased[y][x] =1;
+				cnt++;
+			}
+			for (int i = 0; i < 4; i++) {
+				for (int j = 1; j <= max_len; j++) {
+					if(erased[y + dir[i][0] * j][x + dir[i][1] * j]==0) {
+						cnt++;
+					}
+					erased[y + dir[i][0] * j][x + dir[i][1] * j] = 1;
+				}
+			}
+		}
+		
+	}
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		int start_cnt =0;
+		for (int i = 0; i < N; i++) {
+			String temp = br.readLine();
+			for (int j = 0; j < temp.length(); j++) {
+				board[i][j] = temp.charAt(j);
+				if(board[i][j]=='*') {
+					start_cnt++;
+				}
+			}
+		}
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (board[i][j] == '*') {
+					erase(i,j);
+				}
+			}
+		}
+		
+		if(cnt == start_cnt) {
+			System.out.println(ans.size());
+			for(int i=0;i<ans.size();i++) {
+				System.out.println(ans.get(i).y+1+" " +(ans.get(i).x+1) + " " +ans.get(i).len);
+			}
+		}
+		else {
+			System.out.println(-1);
+		}
+	}
+
+}

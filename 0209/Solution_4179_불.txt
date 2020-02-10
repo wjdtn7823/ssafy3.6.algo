@@ -1,0 +1,82 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	public static int N,M;
+	public static char[][] board = new char[1001][1001];
+	public static Queue<Position> q = new LinkedList<Position>();
+	public static Queue<Position> fire = new LinkedList<Position>();
+	public static int [][]dir = {{-1,0},{0,1},{1,0},{0,-1}};
+	public static boolean[][] visited = new boolean[1001][1001];
+	static class Position{
+		int y;
+		int x;
+		Position(int a,int b){
+			y = a;
+			x= b;
+		}
+	}
+	
+	public static void main(String[] args)throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st= new StringTokenizer(br.readLine()," ");
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		for(int i=0;i<N;i++){
+			String temp = br.readLine();
+			for(int j=0;j<temp.length();j++){
+				board[i][j] = temp.charAt(j);
+				if(board[i][j]=='J'){
+					visited[i][j] = true;
+					q.add(new Position(i,j));
+				}
+				else if(board[i][j]=='F'){
+					visited[i][j]= true;
+					fire.add(new Position(i,j));
+				}
+			}
+		}
+		int ans = 0;
+		boolean suc = false;
+		exit:while(!q.isEmpty()){
+			ans++;
+			int q_size = q.size();
+			for(int i=0;i<q_size;i++){
+				Position cur = q.poll();
+				if(board[cur.y][cur.x]=='F') continue;
+				for(int j=0;j<4;j++){
+					int ny = cur.y + dir[j][0];
+					int nx = cur.x + dir[j][1];
+					if(ny<0 || nx<0 || ny>=N || nx>=M){//성공한 경우
+						suc = true;
+						break exit;
+					}
+					if(visited[ny][nx]) continue;
+					if(board[ny][nx]=='#' || board[ny][nx]=='F') continue;
+					visited[ny][nx] = true;
+					q.add(new Position(ny,nx));
+				}
+				//board[cur.y][cur.x] = '.';
+			}
+			//불 옮기기
+			q_size = fire.size();
+			for(int i=0;i<q_size;i++){
+				Position cur = fire.poll();
+				for(int j=0;j<4;j++){
+					int ny = cur.y + dir[j][0];
+					int nx = cur.x + dir[j][1];
+					if(ny<0 || nx<0 || ny>=N || nx>=M) continue;
+					if(board[ny][nx]=='#' || board[ny][nx]=='F') continue;
+					board[ny][nx] = 'F';
+					fire.add(new Position(ny,nx));
+				}
+			}
+		}
+		if(suc){
+			System.out.println(ans);
+		}else{
+			System.out.println("IMPOSSIBLE");
+		}
+	}
+
+}

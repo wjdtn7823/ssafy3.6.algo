@@ -1,0 +1,70 @@
+import java.io.*;
+import java.util.*;
+
+class Position {
+	int y;
+	int x;
+	Position(int a,int b){
+		y = a; x =b;
+	}
+	Position(){}
+}
+
+public class Main {
+	public static int N,M,ans;
+	public static int board[][] = new int [51][51];
+	public static ArrayList<Position> node = new ArrayList<Position>();
+	public static ArrayList<Position> home = new ArrayList<Position>(); 
+	public static int cal(){
+		int ret =0;
+		for(Position h : home){
+			int temp =Integer.MAX_VALUE;
+			for(Position chicken: node){
+				temp = Math.min(Math.abs(h.y-chicken.y) +Math.abs(h.x-chicken.x), temp);
+			}
+			ret+= temp;
+		}
+		return ret;
+	}
+	
+	public static void dfs(int y,int x, int cnt){
+		if(cnt==M){
+			int candi = cal();
+			ans = Math.min(candi, ans);
+			return;
+		}
+		
+		for(int i=y;i<=N;i++){
+			for(int j=x;j<=N;j++){
+				if(board[i][j] == 2){
+					node.add(new Position(i,j));
+					dfs(i,j+1,cnt+1);
+					node.remove(node.size()-1);
+				}
+			}
+			x=0;
+		}
+	}
+	
+	public static void main(String[] args)throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st= new StringTokenizer(br.readLine()," ");
+		N =Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		for(int i=1;i<=N;i++){
+			st = new StringTokenizer(br.readLine()," ");
+			for(int j=1;j<=N;j++){
+				board[i][j] = Integer.parseInt(st.nextToken());
+				if(board[i][j]==1){
+					home.add(new Position(i,j));
+				}
+			}
+		}
+		//0 빈칸 , 1 집, 2 치킨
+		//치킨집(2)중에 M개를 고르는 모든 경우에 대해 치킨 거리 계산
+		ans = Integer.MAX_VALUE;
+		dfs(1,1,0);
+		System.out.println(ans);
+	}
+
+}

@@ -1,0 +1,68 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+	
+	static class Flower implements Comparable<Flower>{
+		int start;
+		int end;
+		Flower(int a,int b){
+			start= a;
+			end = b;
+		}
+		Flower(){}
+		public int compareTo(Flower f){
+			int ret = (start - f.start);
+			if(ret ==0){
+				return end-f.end;
+			}
+			return ret;
+		}
+	}
+	public static int N;
+	public static Flower[] flower = new Flower[100001];
+	public static void main(String[] args)throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		N = Integer.parseInt(br.readLine());
+		StringTokenizer st;
+		for(int i=0;i<N;i++){
+			st = new StringTokenizer(br.readLine()," ");
+			int z,x,c,v;
+			z= Integer.parseInt(st.nextToken()) * 100; 
+			x= Integer.parseInt(st.nextToken());
+			c= Integer.parseInt(st.nextToken()) * 100;
+			v= Integer.parseInt(st.nextToken());
+			flower[i] = new Flower(z+x,c+v);
+		}	
+		Arrays.sort(flower,0,N);
+		//3월 1(301)일~ 11월 30(1130)일까지만 가능
+		int i=301;
+		int idx =-1;
+		int temp = 0,ans = 0;
+		while(i<=1130 && idx < N){
+			boolean flag= false;
+			idx ++;
+			for(int j=idx;j<N;j++){
+				if(flower[j].start > i) break;
+				
+				if(temp < flower[j].end){
+					temp = flower[j].end;
+					idx = j;
+					flag= true;
+				}
+			}
+			if(flag){
+				ans++;
+			}
+			else{
+				System.out.println(0);
+				return;
+			}
+			i = temp;
+		}
+		
+		
+		System.out.println(ans);
+	}
+
+}
