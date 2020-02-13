@@ -1,0 +1,62 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+int solution(string s) {
+    int answer = s.size();
+    for(int i=1;i<s.size();i++)
+    {
+        int idx=0, tmp_idx=0, res_tmp=0;
+        while(idx<s.size())
+        {
+            int cnt=1;
+            if(idx+i>=s.size())
+            {
+                for(int j=idx;j<s.size();j++)
+                    res_tmp++;
+                break;
+            }
+            while(1)
+            {
+                int cnt_tmp=0;
+                tmp_idx=idx;
+                for(int j=idx+i;j<idx+i+i;j++)
+                {
+                    if(s[tmp_idx++]==s[j])
+                        cnt_tmp++;
+                    else
+                        break;
+                }
+                if(cnt_tmp==i)
+                {
+                    idx+=i*cnt;
+                    cnt++;
+                }                
+                else
+                    break;
+                if(idx>=s.size())
+                    break;
+            }
+            idx+=i;
+            if(cnt==1)
+                res_tmp+=i;
+            else if(cnt>=2 && cnt<10)
+                res_tmp+=i+1;
+            else if(cnt>=10 && cnt<100)
+                res_tmp+=i+2;
+            else if(cnt>=100 && cnt<1000)
+                res_tmp+=i+3;
+            else
+                res_tmp+=i+4;
+        }
+        if(res_tmp<answer)
+        {
+            answer=res_tmp; 
+            cout<<i<<'\n';
+        }
+                       
+    }
+    return answer;
+}
